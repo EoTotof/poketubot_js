@@ -1,0 +1,23 @@
+{
+  "name": "poketubot_js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^13.0.0-dev.t1627831263.774f5b7",
+    "dotenv": "^10.0.0",
+    "expr-eval": "^2.0.2",
+    "sequelize": "^6.6.5",
+    "sqlite3": "^5.0.0",
+    "unidecode": "^0.1.8"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0"
+  }
+}
