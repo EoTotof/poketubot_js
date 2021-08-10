@@ -40,12 +40,13 @@ const commands = client.commands.map(({ execute, ...data }) => data);
 
 client.once('ready', async () => {
     try {
-        // await client.application?.commands.set(commands);
+        await client.application?.commands.set(commands);
 
+        /*
         commands.forEach(async (command) => {
             await client.guilds.cache.get('739095082661052458')?.commands.create(command);
         });
-
+        */
 
         console.log('Successfully reloaded application slash commands.');
     }
