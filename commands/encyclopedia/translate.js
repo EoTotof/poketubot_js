@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const { otherExports } = require('./pokedex.js');
+const { getPokemons } = require('./pokedex.js').otherExports;
 
 const getTranslateEmbed = (pokemon) => {
     return new MessageEmbed()
@@ -23,7 +23,7 @@ module.exports = {
         required: true,
     }],
     async execute(interaction) {
-        const pokemons = await otherExports.getPokemons(interaction.options.getString('name_or_number'));
+        const pokemons = await getPokemons(interaction.options.getString('name_or_number'));
 
         if (pokemons.length === 0) {
             await interaction.reply({

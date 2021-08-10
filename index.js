@@ -1,6 +1,10 @@
 const dotenv = require('dotenv');
 const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
+const { Parser } = require('expr-eval');
+
+const { getRollEmbed } = require('./commands/rolls/roll').otherExports;
+const { getCalcEmbed } = require('./commands/calculations/calc').otherExports;
 
 dotenv.config();
 
@@ -9,8 +13,10 @@ client.commands = new Collection();
 
 // Import all commands from these directories
 const commandDirectories = [
-    './commands/rolls',
+    './commands/calculations',
     './commands/encyclopedia',
+    './commands/random',
+    './commands/rolls',
 ];
 
 commandDirectories.forEach((directory) => {
@@ -42,6 +48,19 @@ client.once('ready', async () => {
         console.error(error);
     }
 
+});
+
+client.on('messageCreate', message => {
+    if (message.content.match(/^(?:[+-]?\d+)+$/g)) {
+        message.reply({
+            embeds: [getCalcEmbed(message.content, Parser.evaluate(message.content))],
+        });
+    }
+    else if (message.content.match(/^(?:[+-]?\d+(?:[dD]\d+)?)+$/g)) {
+        message.reply({
+            embeds: [getRollEmbed(message.content)],
+        });
+    }
 });
 
 client.on('interactionCreate', async interaction => {

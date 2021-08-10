@@ -80,6 +80,5 @@ module.exports = {
                 embeds: [getTypeEmbed(type)],
             });
         }
-
     },
 };

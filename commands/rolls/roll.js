@@ -11,7 +11,7 @@ const getRollEmbed = (diceString) => {
 
         return {
             rollsSum: number < 0 ? -rollsSum : rollsSum,
-            resultString: `${number}d${die} : ${rolls}`,
+            resultString: `${number}d${die} : ${rolls.join(', ')}`,
         };
     };
 
@@ -64,7 +64,10 @@ const getRollEmbed = (diceString) => {
             response = `**${diceString} :**\n${resultStrings.join('\n')}\n**Total : **${rollsTotal}`;
         }
         else {
-            response = `**${diceString} :** ${resultStrings[0].split(': ')[1]} **Total : **${rollsTotal}`;
+            response = `**${diceString} :** ${resultStrings[0].split(': ')[1]}`;
+            if (diceNumber > 1) {
+                response += `\n**Total : **${rollsTotal}`;
+            }
         }
 
         const embed = new MessageEmbed()
@@ -118,5 +121,8 @@ module.exports = {
                 });
             }
         }
+    },
+    otherExports: {
+        getRollEmbed: getRollEmbed,
     },
 };

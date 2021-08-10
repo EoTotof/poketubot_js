@@ -1,15 +1,68 @@
-const { MessageEmbed } = require('discord.js');
-const { otherExports } = require('./pokedex.js');
+const { MessageEmbed, MessageButton } = require('discord.js');
+const { getPokemons } = require('./pokedex.js').otherExports;
+const { addMegaButtons, executeCommandInteraction } = require('../commandsUtils');
+const { toTitleCase } = require('../../utils');
 
-const getPictureEmbed = (pokemon, form = undefined) => {
+const getPictureEmbed = (pokemon, megaForm = undefined) => {
+    let description = pokemon.name;
+    if (pokemon.form) {
+        description += ` - ${pokemon.form} form`;
+    }
+    if (megaForm) {
+        description += ` - ${toTitleCase(megaForm, '_')}`;
+    }
+
+    const form = [pokemon.form_number, megaForm]
+        .filter((x) => x)
+        .join('+');
+
     return new MessageEmbed()
-        .setDescription(`${pokemon.name}${form ? ' - ' + pokemon.form + ' form' : '' }`)
+        .setDescription(description)
         .setImage(
             process.env.PIC_URL
                 .replace('<pokemon>', `${pokemon.number.toString().padStart(3, '0')}`)
-                .replace('<form>', form > 0 ? `-${form}` : ''),
+                .replace('<form>', form ? `-${form}` : ''),
         )
         .setColor('RANDOM');
+};
+
+const getInteractionButtons = (pokemons, timestamp) => {
+    const buttons = pokemons.map((pokemon, index) => {
+        return new MessageButton()
+            .setCustomId(`${timestamp}-picture-${pokemons[0].number}-${index}`)
+            .setLabel(pokemon.form || 'Normal')
+            .setStyle('PRIMARY');
+    });
+
+    addMegaButtons(buttons, timestamp, pokemons, 'picture');
+    return buttons;
+};
+
+const getInteractionFilter = (pokemons, timestamp, interaction) => {
+    return (i) => {
+        return i.customId.startsWith(`${timestamp}-picture-${pokemons[0].number}`) && i.user.id === interaction.user.id;
+    };
+};
+
+const getInteractionOnCollect = (pokemons) => {
+    return async (i) => {
+        const formID = i.customId.split('-')[3];
+        let form;
+        let megaForm;
+        if (formID.includes('+')) {
+            [form, megaForm] = i.customId.split('-')[3].split('+');
+        }
+        else if (!isNaN(parseInt(formID))) {
+            form = formID;
+        }
+        else {
+            megaForm = formID;
+        }
+        await i.update({
+            embeds: [getPictureEmbed(pokemons[form] || pokemons[0], megaForm)],
+            components: [],
+        });
+    };
 };
 
 module.exports = {
@@ -22,6 +75,28 @@ module.exports = {
         required: true,
     }],
     async execute(interaction) {
-        await otherExports.executePokemonCommand('picture', getPictureEmbed, interaction);
+        const timestamp = Date.now();
+        const pokemons = await getPokemons(interaction.options.getString('name_or_number'));
+        if (pokemons.length == 0) {
+            await interaction.reply({
+                embeds: [new MessageEmbed().setDescription(`Nothing found for "${interaction.options.getString('name_or_number')}"`)],
+            });
+        }
+        else if (pokemons.length == 1 && !pokemons[0].mega_form) {
+            await interaction.reply({
+                embeds: [getPictureEmbed(pokemons[0])],
+            });
+        }
+        else {
+            await executeCommandInteraction(
+                pokemons,
+                timestamp,
+                interaction,
+                getInteractionButtons,
+                `${pokemons[0].name} form?`,
+                getInteractionFilter(pokemons, timestamp, interaction),
+                getInteractionOnCollect(pokemons),
+            );
+        }
     },
 };

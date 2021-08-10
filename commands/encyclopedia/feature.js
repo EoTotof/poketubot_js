@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
-const { executeSimpleDefineCommand, addLongField } = require('../commands_utils');
+const { executeSimpleDefineCommand, addLongField } = require('../commandsUtils');
 
 const getFeature = async (name) => {
     return await models.feature.findOne({
@@ -61,6 +61,9 @@ module.exports = {
         required: true,
     }],
     async execute(interaction) {
-        await executeSimpleDefineCommand(interaction, getFeature, getFeatureEmbed);
+        await executeSimpleDefineCommand(interaction, getFeature, getFeatureEmbed, models.feature);
+    },
+    otherExports: {
+        getFeature: getFeature,
     },
 };

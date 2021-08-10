@@ -9,10 +9,9 @@ const rollDice = (number, die) => {
 };
 
 const normalizeString = (string) => {
-    let normalizedString = unidecode(string);
-    normalizedString = normalizedString.replace(/[\W_]/gu, '');
-    normalizedString = normalizedString.toLowerCase();
-    return normalizedString;
+    return unidecode(string)
+        .replace(/[\W_]/gu, '')
+        .toLowerCase();
 };
 
 const sliceString = (string, maxLength, separator) => {
@@ -41,8 +40,17 @@ const sliceString = (string, maxLength, separator) => {
     return slicedString;
 };
 
+const toTitleCase = ((str, separator = '') => {
+    if (str.length === 1) return str.toUpperCase();
+    return str
+        .split(new RegExp(`[\\s${separator}]`))
+        .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
+        .join(' ');
+});
+
 module.exports = {
     rollDice: rollDice,
     normalizeString: normalizeString,
     sliceString: sliceString,
+    toTitleCase: toTitleCase,
 };

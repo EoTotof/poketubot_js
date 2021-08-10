@@ -13,6 +13,7 @@
     "discord.js": "^13.0.0-dev.t1627831263.774f5b7",
     "dotenv": "^10.0.0",
     "expr-eval": "^2.0.2",
+    "minisearch": "^3.0.4",
     "sequelize": "^6.6.5",
     "sqlite3": "^5.0.0",
     "unidecode": "^0.1.8"

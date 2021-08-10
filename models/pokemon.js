@@ -20,6 +20,14 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.STRING(255),
             allowNull: true,
         },
+        form_number: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        has_form_cry: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         french_name: {
             type: DataTypes.STRING(255),
             allowNull: false,
@@ -34,6 +42,10 @@ module.exports = function(sequelize, DataTypes) {
         },
         male_ratio: {
             type: DataTypes.DECIMAL,
+            allowNull: true,
+        },
+        mega_form: {
+            type: DataTypes.STRING(255),
             allowNull: true,
         },
         search_string: {

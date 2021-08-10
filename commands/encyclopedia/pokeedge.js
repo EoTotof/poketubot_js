@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
-const { executeSimpleDefineCommand, addLongField } = require('../commands_utils');
+const { executeSimpleDefineCommand, addLongField } = require('../commandsUtils');
 
 const getPokeEdge = async (name) => {
     return await models.pokeedge.findOne({
@@ -36,6 +36,9 @@ module.exports = {
         required: true,
     }],
     async execute(interaction) {
-        await executeSimpleDefineCommand(interaction, getPokeEdge, getPokeedgeEmbed);
+        await executeSimpleDefineCommand(interaction, getPokeEdge, getPokeedgeEmbed, models.pokeedge);
+    },
+    otherExports: {
+        getPokeEdge: getPokeEdge,
     },
 };

@@ -1,7 +1,8 @@
-const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
+const { MessageEmbed, MessageButton } = require('discord.js');
+
 const models = require('../../models');
 const { normalizeString } = require('../../utils');
-
+const { executeCommandInteraction, getSuggestion } = require('../commandsUtils');
 
 const getPokemons = async (nameOrNumber) => {
     let pokemons;
@@ -31,63 +32,31 @@ const getPokedexEmbed = (pokemon, form = undefined) => {
         .setColor('RANDOM');
 };
 
-const executePokemonCommand = async (commandID, embedGetter, interaction) => {
-    const timestamp = Date.now();
-    const pokemons = await getPokemons(interaction.options.getString('name_or_number'));
-    if (pokemons.length == 0) {
-        await interaction.reply({
-            embeds: [new MessageEmbed().setDescription(`Nothing found for "${interaction.options.getString('name_or_number')}"`)],
-        });
-    }
-    else if (pokemons.length == 1) {
-        await interaction.reply({
-            embeds: [embedGetter(pokemons[0])],
-        });
-    }
-    else {
-        const buttons = pokemons.map((pokemon, index) => {
-            return new MessageButton()
-                .setCustomId(`${timestamp}-${commandID}-${pokemons[0].number}-${index}`)
-                .setLabel(pokemon.form)
-                .setStyle('PRIMARY');
-        });
-
-        const actionRows = [];
-
-        for (let i = 0; i < buttons.length; i += 5) {
-            actionRows.push(new MessageActionRow().addComponents(buttons.slice(i, i + 5)));
-        }
-
-        await interaction.reply({
-            embeds: [new MessageEmbed().setDescription(`${pokemons[0].name} form?`)],
-            components: actionRows,
-        });
-
-        const filter = ((i) => {
-            return i.customId.startsWith(`${timestamp}-${commandID}-${pokemons[0].number}`) && i.user.id === interaction.user.id;
-        });
-
-        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 30000 });
-
-        collector.on('collect', async (i) => {
-            const form = i.customId.split('-')[3];
-            await i.update({
-                embeds: [embedGetter(pokemons[form], form)],
-                components: [],
-            });
-        });
-
-        collector.on('end', async (collected) => {
-            if (collected.size == 0) {
-                await interaction.editReply({
-                    embeds: [new MessageEmbed().setDescription('The command has expired.')],
-                    components: [],
-                });
-            }
-        });
-    }
-
+const getInteractionButtons = (pokemons, timestamp) => {
+    return pokemons.map((pokemon, index) => {
+        return new MessageButton()
+            .setCustomId(`${timestamp}-pokedex-${pokemons[0].number}-${index}`)
+            .setLabel(pokemon.form)
+            .setStyle('PRIMARY');
+    });
 };
+
+const getInteractionFilter = (pokemons, timestamp, interaction) => {
+    return (i) => {
+        return i.customId.startsWith(`${timestamp}-pokedex-${pokemons[0].number}`) && i.user.id === interaction.user.id;
+    };
+};
+
+const getInteractionOnCollect = (pokemons) => {
+    return async (i) => {
+        const form = i.customId.split('-')[3];
+        await i.update({
+            embeds: [getPokedexEmbed(pokemons[form], form)],
+            components: [],
+        });
+    };
+};
+
 module.exports = {
     name: 'pokedex',
     description: 'Displays the Pokédex entry of a Pokémon',
@@ -98,10 +67,40 @@ module.exports = {
         required: true,
     }],
     async execute(interaction) {
-        await executePokemonCommand('pokedex', getPokedexEmbed, interaction);
+        const timestamp = Date.now();
+        const pokemons = await getPokemons(interaction.options.getString('name_or_number'));
+        if (pokemons.length == 0) {
+            const suggestion = await getSuggestion({
+                searchValue: interaction.options.getString('name_or_number'),
+                model: models.pokemon,
+                fields: ['name', 'french_name'],
+                storeFields: ['name', 'french_name'],
+                displayFunction: ((result) => `${result.name} (${result.french_name})`),
+            });
+            let nothingFoundMessage = `Nothing found for "${interaction.options.getString('name_or_number')}"`;
+            nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
+            await interaction.reply({
+                embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+            });
+        }
+        else if (pokemons.length == 1) {
+            await interaction.reply({
+                embeds: [getPokedexEmbed(pokemons[0])],
+            });
+        }
+        else {
+            await executeCommandInteraction(
+                pokemons,
+                timestamp,
+                interaction,
+                getInteractionButtons,
+                `${pokemons[0].name} form?`,
+                getInteractionFilter(pokemons, timestamp, interaction),
+                getInteractionOnCollect(pokemons),
+            );
+        }
     },
     otherExports: {
         getPokemons: getPokemons,
-        executePokemonCommand: executePokemonCommand,
     },
 };

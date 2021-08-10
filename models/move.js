@@ -84,7 +84,7 @@ module.exports = function(sequelize, DataTypes) {
         search_string: {
             type: DataTypes.VIRTUAL,
             get() {
-                let searchString = `#${normalizeString(this.name)}#`;
+                let searchString = `#${normalizeString(this.name.replace(/\[.+\]/g, ''))}#`;
                 if (this.french_name) {
                     searchString += `${normalizeString(this.french_name)}#`;
                 }
