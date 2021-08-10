@@ -14,7 +14,7 @@ const getPictureEmbed = (pokemon, megaForm = undefined) => {
 
     const form = [pokemon.form_number, megaForm]
         .filter((x) => x)
-        .join('+');
+        .join('_');
 
     return new MessageEmbed()
         .setDescription(description)
@@ -89,6 +89,7 @@ module.exports = {
         }
         else {
             await executeCommandInteraction(
+                false,
                 pokemons,
                 timestamp,
                 interaction,

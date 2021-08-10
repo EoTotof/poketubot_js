@@ -1,3 +1,4 @@
+const { joinVoiceChannel, VoiceConnectionStatus, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
 const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
 const MiniSearch = require('minisearch');
 const { sliceString, toTitleCase } = require('../utils');
@@ -34,7 +35,7 @@ const executeSimpleRandomCommand = async (interaction, randomGetter, embedGetter
     });
 };
 
-const executeCommandInteraction = async (objects, timestamp, interaction, buttonsGetter, buttonsMessage, filter, onCollect) => {
+const executeCommandInteraction = async (isEphemeral, objects, timestamp, interaction, buttonsGetter, buttonsMessage, filter, onCollect) => {
     const buttons = buttonsGetter(objects, timestamp);
 
     const actionRows = [];
@@ -46,6 +47,7 @@ const executeCommandInteraction = async (objects, timestamp, interaction, button
     await interaction.reply({
         embeds: [new MessageEmbed().setDescription(buttonsMessage)],
         components: actionRows,
+        ephemeral: isEphemeral,
     });
 
     const collector = interaction.channel.createMessageComponentCollector({ filter, time: 30000 });
@@ -112,6 +114,29 @@ const getLastPlaytestVersion = (objects) => {
     }
 };
 
+const playAudioFromUrl = (interaction, url) => {
+    // If a connection to the guild doesn't already exist and the user is in a voice channel, join that channel
+    // and create a subscription.
+    if (interaction.member && interaction.member.voice.channel) {
+        const channel = interaction.member.voice.channel;
+
+        const connection = joinVoiceChannel({
+            channelId: channel.id,
+            guildId: channel.guild.id,
+            adapterCreator: channel.guild.voiceAdapterCreator,
+        });
+
+        connection.on(VoiceConnectionStatus.Ready, () => {
+            console.log('The connection has entered the Ready state - ready to play audio!');
+        });
+
+        const player = createAudioPlayer();
+        const resource = createAudioResource(url);
+        player.play(resource);
+        connection.subscribe(player);
+    }
+};
+
 module.exports = {
     executeSimpleDefineCommand: executeSimpleDefineCommand,
     executeSimpleRandomCommand: executeSimpleRandomCommand,
@@ -120,4 +145,5 @@ module.exports = {
     addLongField: addLongField,
     addMegaButtons: addMegaButtons,
     getLastPlaytestVersion: getLastPlaytestVersion,
+    playAudioFromUrl: playAudioFromUrl,
 };

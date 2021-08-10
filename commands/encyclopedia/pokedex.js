@@ -90,6 +90,7 @@ module.exports = {
         }
         else {
             await executeCommandInteraction(
+                false,
                 pokemons,
                 timestamp,
                 interaction,

@@ -10,9 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/opus": "^0.5.3",
+    "@discordjs/voice": "^0.5.6",
     "discord.js": "^13.0.0-dev.t1627831263.774f5b7",
     "dotenv": "^10.0.0",
     "expr-eval": "^2.0.2",
+    "libsodium-wrappers": "^0.7.9",
     "minisearch": "^3.0.4",
     "sequelize": "^6.6.5",
     "sqlite3": "^5.0.0",

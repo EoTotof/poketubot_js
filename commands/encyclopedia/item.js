@@ -117,6 +117,7 @@ module.exports = {
         }
         else {
             await executeCommandInteraction(
+                false,
                 items,
                 timestamp,
                 interaction,

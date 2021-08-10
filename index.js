@@ -8,7 +8,13 @@ const { getCalcEmbed } = require('./commands/calculations/calc').otherExports;
 
 dotenv.config();
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Client({
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_VOICE_STATES,
+    ],
+});
 client.commands = new Collection();
 
 // Import all commands from these directories
@@ -17,6 +23,7 @@ const commandDirectories = [
     './commands/encyclopedia',
     './commands/random',
     './commands/rolls',
+    './commands/sound',
 ];
 
 commandDirectories.forEach((directory) => {
@@ -33,8 +40,6 @@ const commands = client.commands.map(({ execute, ...data }) => data);
 
 client.once('ready', async () => {
     try {
-        console.log('Started refreshing application slash commands');
-
         // await client.application?.commands.set(commands);
 
         commands.forEach(async (command) => {

@@ -115,6 +115,7 @@ module.exports = {
         }
         else {
             await executeCommandInteraction(
+                false,
                 abilities,
                 timestamp,
                 interaction,
