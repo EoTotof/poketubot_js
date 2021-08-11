@@ -13,6 +13,10 @@ const client = new Client({
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILD_VOICE_STATES,
+        Intents.FLAGS.DIRECT_MESSAGES,
+    ],
+    partials: [
+        'CHANNEL',
     ],
 });
 client.commands = new Collection();
@@ -57,15 +61,21 @@ client.once('ready', async () => {
 });
 
 client.on('messageCreate', message => {
-    if (message.content.match(/^(?:[+-]?\d+)+$/g)) {
-        message.reply({
-            embeds: [getCalcEmbed(message.content, Parser.evaluate(message.content))],
-        });
+    try {
+        if (message.content.match(/^(?:[+-]?\d+)+$/g)) {
+            message.reply({
+                embeds: [getCalcEmbed(message.content, Parser.evaluate(message.content))],
+            });
+        }
+        else if (message.content.match(/^(?:[+-]?\d+(?:[dD]\d+)?)+$/g)) {
+            message.reply({
+                embeds: [getRollEmbed(message.content)],
+            });
+        }
     }
-    else if (message.content.match(/^(?:[+-]?\d+(?:[dD]\d+)?)+$/g)) {
-        message.reply({
-            embeds: [getRollEmbed(message.content)],
-        });
+    catch (error) {
+        console.error(error);
+        message.reply({ content: 'There was an error while executing this command!' });
     }
 });
 
@@ -79,7 +89,12 @@ client.on('interactionCreate', async interaction => {
     }
     catch (error) {
         console.error(error);
-        await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        if (!interaction.replied) {
+            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        }
+        else {
+            await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+        }
     }
 });
 

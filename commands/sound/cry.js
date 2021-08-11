@@ -113,6 +113,13 @@ module.exports = {
         required: true,
     }],
     async execute(interaction) {
+        const channel = interaction.member?.voice.channel;
+        if (!channel) {
+            await interaction.reply({
+                embeds: [new MessageEmbed().setDescription('Please join a voice channel to use this command.')],
+                ephemeral: true,
+            });
+        }
         const timestamp = Date.now();
         const pokemons = await getPokemonsWithCries(interaction.options.getString('name_or_number'));
         if (pokemons.length == 0) {

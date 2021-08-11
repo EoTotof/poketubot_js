@@ -64,10 +64,7 @@ const getRollEmbed = (diceString) => {
             response = `**${diceString} :**\n${resultStrings.join('\n')}\n**Total : **${rollsTotal}`;
         }
         else {
-            response = `**${diceString} :** ${resultStrings[0].split(': ')[1]}`;
-            if (diceNumber > 1) {
-                response += `\n**Total : **${rollsTotal}`;
-            }
+            response = `**${diceString} :** ${resultStrings[0].split(': ')[1]} **Total : **${rollsTotal}`;
         }
 
         const embed = new MessageEmbed()

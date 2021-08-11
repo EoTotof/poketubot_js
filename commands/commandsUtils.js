@@ -1,4 +1,4 @@
-const { joinVoiceChannel, VoiceConnectionStatus, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
+const { joinVoiceChannel, VoiceConnectionStatus, createAudioPlayer, createAudioResource, entersState } = require('@discordjs/voice');
 const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
 const MiniSearch = require('minisearch');
 const { sliceString, toTitleCase } = require('../utils');
@@ -114,10 +114,16 @@ const getLastPlaytestVersion = (objects) => {
     }
 };
 
-const playAudioFromUrl = (interaction, url) => {
+const player = createAudioPlayer();
+let timeoutID;
+
+const playAudioFromUrl = async (interaction, url) => {
     // If a connection to the guild doesn't already exist and the user is in a voice channel, join that channel
     // and create a subscription.
     if (interaction.member && interaction.member.voice.channel) {
+        clearTimeout(timeoutID);
+        timeoutID = undefined;
+
         const channel = interaction.member.voice.channel;
 
         const connection = joinVoiceChannel({
@@ -126,11 +132,23 @@ const playAudioFromUrl = (interaction, url) => {
             adapterCreator: channel.guild.voiceAdapterCreator,
         });
 
+        try {
+            await entersState(connection, VoiceConnectionStatus.Ready, 20e3);
+        }
+        catch (error) {
+            console.warn(error);
+            await interaction.followUp('Failed to join voice channel within 20 seconds, please try again later!');
+            return;
+        }
+
         connection.on(VoiceConnectionStatus.Ready, () => {
             console.log('The connection has entered the Ready state - ready to play audio!');
         });
 
-        const player = createAudioPlayer();
+        timeoutID = setTimeout(() => {
+            connection.destroy();
+        }, 600e3);
+
         const resource = createAudioResource(url);
         player.play(resource);
         connection.subscribe(player);
