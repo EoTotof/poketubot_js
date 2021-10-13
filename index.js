@@ -103,4 +103,4 @@ client.on('interactionCreate', interaction => {
     // console.log(interaction);
 });
 
-client.login(process.env.TOKEN);
+client.login(process.env.PTU_TOKEN);

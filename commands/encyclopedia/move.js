@@ -96,6 +96,7 @@ module.exports = {
             nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
             await interaction.reply({
                 embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+                ephemeral: true,
             });
         }
         else if (moves.length == 1) {

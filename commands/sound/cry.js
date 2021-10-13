@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 
 const models = require('../../models');
 const { toTitleCase, normalizeString } = require('../../utils');
-const { addMegaButtons, executeCommandInteraction, playAudioFromUrl } = require('../commandsUtils');
+const { addMegaButtons, executeCommandInteraction, playAudioFromUrl, getSuggestion } = require('../commandsUtils');
 
 const getPokemonsWithCries = async (nameOrNumber) => {
     let pokemons;
@@ -119,12 +119,22 @@ module.exports = {
                 embeds: [new MessageEmbed().setDescription('Please join a voice channel to use this command.')],
                 ephemeral: true,
             });
+            return;
         }
         const timestamp = Date.now();
         const pokemons = await getPokemonsWithCries(interaction.options.getString('name_or_number'));
         if (pokemons.length == 0) {
+            const suggestion = await getSuggestion({
+                searchValue: interaction.options.getString('name_or_number'),
+                model: models.pokemon,
+                fields: ['name', 'french_name'],
+                storeFields: ['name', 'french_name'],
+                displayFunction: ((result) => `${result.name} (${result.french_name})`),
+            });
+            let nothingFoundMessage = `Nothing found for "${interaction.options.getString('name_or_number')}"`;
+            nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(`Nothing found for "${interaction.options.getString('name_or_number')}"`)],
+                embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
                 ephemeral: true,
             });
         }

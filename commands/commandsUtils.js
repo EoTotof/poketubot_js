@@ -19,6 +19,7 @@ const executeSimpleDefineCommand = async (interaction, getter, embedGetter, mode
 
         await interaction.reply({
             embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+            ephemeral: true,
         });
     }
     else {

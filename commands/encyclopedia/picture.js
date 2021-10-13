@@ -1,7 +1,10 @@
 const { MessageEmbed, MessageButton } = require('discord.js');
+
 const { getPokemons } = require('./pokedex.js').otherExports;
-const { addMegaButtons, executeCommandInteraction } = require('../commandsUtils');
+const { addMegaButtons, executeCommandInteraction, getSuggestion } = require('../commandsUtils');
 const { toTitleCase } = require('../../utils');
+const models = require('../../models');
+
 
 const getPictureEmbed = (pokemon, megaForm = undefined) => {
     let description = pokemon.name;
@@ -78,8 +81,18 @@ module.exports = {
         const timestamp = Date.now();
         const pokemons = await getPokemons(interaction.options.getString('name_or_number'));
         if (pokemons.length == 0) {
+            const suggestion = await getSuggestion({
+                searchValue: interaction.options.getString('name_or_number'),
+                model: models.pokemon,
+                fields: ['name', 'french_name'],
+                storeFields: ['name', 'french_name'],
+                displayFunction: ((result) => `${result.name} (${result.french_name})`),
+            });
+            let nothingFoundMessage = `Nothing found for "${interaction.options.getString('name_or_number')}"`;
+            nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(`Nothing found for "${interaction.options.getString('name_or_number')}"`)],
+                embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+                ephemeral: true,
             });
         }
         else if (pokemons.length == 1 && !pokemons[0].mega_form) {
