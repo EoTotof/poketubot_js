@@ -6,7 +6,7 @@ const getRollEmbed = (diceString) => {
         // Parse and evaluate a simple dice string `+-XdY`
         const [number, die] = simpleDiceString.split('D').map((x) => parseInt(x));
 
-        const rolls = rollDice(number, die);
+        const rolls = rollDice(Math.abs(number), die);
         const rollsSum = rolls.reduce((x, y) => x + y, 0);
 
         return {
@@ -94,13 +94,14 @@ module.exports = {
         },
     ],
     async execute(interaction) {
-        const diceString = interaction.options.getString('dice_string');
-        if (!diceString.match(/^(?:[+-]?\d+(?:[dD]\d+)?)+$/g)) {
+        let diceString = interaction.options.getString('dice_string');
+        if (!diceString.match(/^(?:(?:\s*[+-]\s*)?\d+(?:\s*[dD]\s*\d+)?)+$/g)) {
             await interaction.reply({
                 embeds: [new MessageEmbed().setDescription('Not a valid expression')],
             });
         }
         else {
+            diceString = diceString.replace(/\s/, '');
             const embeds = [getRollEmbed(diceString)];
 
             if (interaction.options.getUser('user')) {

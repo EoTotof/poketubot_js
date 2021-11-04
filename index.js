@@ -67,7 +67,7 @@ client.on('messageCreate', message => {
                 embeds: [getCalcEmbed(message.content, Parser.evaluate(message.content))],
             });
         }
-        else if (message.content.match(/^(?:[+-]?\d+(?:[dD]\d+)?)+$/g)) {
+        else if (message.content.match(/^(?:(?:\s*[+-]\s*)?\d+(?:\s*[dD]\s*\d+)?)+$/g)) {
             message.reply({
                 embeds: [getRollEmbed(message.content)],
             });
