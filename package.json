@@ -12,7 +12,7 @@
   "dependencies": {
     "@discordjs/opus": "^0.5.3",
     "@discordjs/voice": "^0.5.6",
-    "discord.js": "^13.0.0-dev.t1627831263.774f5b7",
+    "discord.js": "^13.0.0",
     "dotenv": "^10.0.0",
     "expr-eval": "^2.0.2",
     "libsodium-wrappers": "^0.7.9",
@@ -25,6 +25,6 @@
     "eslint": "^7.32.0"
   },
   "engines": {
-    "node": "16.x"
+    "node": "16.9.x"
   }
 }
