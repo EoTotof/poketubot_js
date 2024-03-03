@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { rollDice } = require('../../utils');
 
 const getFishEmbed = () => {
@@ -15,9 +15,9 @@ const getFishEmbed = () => {
             + 'After 3 failed attempts, the Bait is consumed.';
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle('Fishing roll')
-        .setColor('RANDOM');
+        .setColor('Random');
 
     const fields = [
         { name: 'Roll', value: `${roll}` },

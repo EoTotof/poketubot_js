@@ -1,7 +1,9 @@
 const dotenv = require('dotenv');
 const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');
+const { Client, Collection } = require('discord.js');
 const { Parser } = require('expr-eval');
+const { Partials } = require('discord.js');
+const { GatewayIntentBits } = require('discord.js');
 
 const { getRollEmbed } = require('./commands/rolls/roll').otherExports;
 const { getCalcEmbed } = require('./commands/calculations/calc').otherExports;
@@ -10,13 +12,13 @@ dotenv.config();
 
 const client = new Client({
     intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_VOICE_STATES,
-        Intents.FLAGS.DIRECT_MESSAGES,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.DirectMessages,
     ],
     partials: [
-        'CHANNEL',
+        Partials.Channel,
     ],
 });
 client.commands = new Collection();

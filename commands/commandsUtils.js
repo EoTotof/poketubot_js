@@ -1,5 +1,5 @@
 const { joinVoiceChannel, VoiceConnectionStatus, createAudioPlayer, createAudioResource, entersState } = require('@discordjs/voice');
-const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
+const { EmbedBuilder, ButtonBuilder, ActionRowBuilder } = require('discord.js');
 const MiniSearch = require('minisearch');
 const { sliceString, toTitleCase } = require('../utils');
 
@@ -18,7 +18,7 @@ const executeSimpleDefineCommand = async (interaction, getter, embedGetter, mode
         nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
 
         await interaction.reply({
-            embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+            embeds: [new EmbedBuilder().setDescription(nothingFoundMessage)],
             ephemeral: true,
         });
     }
@@ -42,11 +42,11 @@ const executeCommandInteraction = async (isEphemeral, objects, timestamp, intera
     const actionRows = [];
 
     for (let i = 0; i < buttons.length; i += 5) {
-        actionRows.push(new MessageActionRow().addComponents(buttons.slice(i, i + 5)));
+        actionRows.push(new ActionRowBuilder().addComponents(buttons.slice(i, i + 5)));
     }
 
     await interaction.reply({
-        embeds: [new MessageEmbed().setDescription(buttonsMessage)],
+        embeds: [new EmbedBuilder().setDescription(buttonsMessage)],
         components: actionRows,
         ephemeral: isEphemeral,
     });
@@ -58,7 +58,7 @@ const executeCommandInteraction = async (isEphemeral, objects, timestamp, intera
     collector.on('end', async (collected) => {
         if (collected.size == 0) {
             await interaction.editReply({
-                embeds: [new MessageEmbed().setDescription('The command has expired.')],
+                embeds: [new EmbedBuilder().setDescription('The command has expired.')],
                 components: [],
             });
         }
@@ -97,10 +97,10 @@ const addMegaButtons = (buttons, timestamp, pokemons, commandID) => {
                     const form = pokemon.form_number ? `${pokemon.form_number}+${megaForm}` : megaForm;
                     const label = pokemon.form ? `${pokemon.form} - ${toTitleCase(megaForm, '_')}` : toTitleCase(megaForm, '_');
                     buttons.push(
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId(`${timestamp}-${commandID}-${pokemon.number}-${form}`)
                             .setLabel(label)
-                            .setStyle('PRIMARY'),
+                            .setStyle('Primary'),
                     );
                 });
         }

@@ -1,12 +1,13 @@
 const { Sequelize } = require('sequelize');
 const models = require('../../models');
+const { ApplicationCommandOptionType } = require('discord.js');
 const executePokedex = require('../encyclopedia/pokedex').execute;
 const executePicture = require('../encyclopedia/picture').execute;
 
 const getRandomPokemon = async () => {
     return await models.pokemon.findOne({
         where: { form_number: null },
-        order: Sequelize.fn('RANDOM'),
+        order: Sequelize.fn('Random'),
         limit: 1,
     });
 };
@@ -16,7 +17,7 @@ module.exports = {
     description: 'Returns a random Pokémon',
     options: [ {
         name: 'command',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Display Pokédex entry or picture. Pokédex entry by default.',
         required: false,
         choices: [
@@ -27,7 +28,7 @@ module.exports = {
     async execute(interaction) {
         const pokemon = await getRandomPokemon();
         interaction.options._hoistedOptions.push(
-            { name: 'name_or_number', type: 'STRING', value: pokemon.name },
+            { name: 'name_or_number', type: ApplicationCommandOptionType.String, value: pokemon.name },
         );
         if (interaction.options.getString('command') === 'picture') {
             await executePicture(interaction);

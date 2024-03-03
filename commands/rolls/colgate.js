@@ -1,5 +1,6 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { rollDice } = require('../../utils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getColgateEmbed = (expression) => {
     const expressionRegex = /[+-]?\d+/g;
@@ -11,8 +12,8 @@ const getColgateEmbed = (expression) => {
 
     const rolls = rollDice(2, 6);
 
-    return new MessageEmbed()
-        .setColor('RANDOM')
+    return new EmbedBuilder()
+        .setColor('Random')
         .addFields(
             {
                 name: 'Skill Rank',
@@ -32,7 +33,7 @@ module.exports = {
     description: 'Skill check using Colgate\'s system',
     options: [{
         name: 'expression',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Your Skill rank modified with the Difficulty of the check. Supports addition and substraction',
         required: true,
     }],
@@ -40,7 +41,7 @@ module.exports = {
         const expression = interaction.options.getString('expression');
         if (!expression.match(/^((?:[+-]?\d+)+)$/g)) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('Not a valid expression')],
+                embeds: [new EmbedBuilder().setDescription('Not a valid expression')],
             });
         }
         else {

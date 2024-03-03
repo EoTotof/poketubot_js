@@ -1,5 +1,6 @@
 const { Sequelize, Op } = require('sequelize');
 const models = require('../../models');
+const { ApplicationCommandOptionType } = require('discord.js');
 const executeMove = require('../encyclopedia/move').execute;
 
 const getRandomMove = async (metronomeOnly = true) => {
@@ -13,7 +14,7 @@ const getRandomMove = async (metronomeOnly = true) => {
             { model: models.contesttype, as: 'contest_type' },
             { model: models.contesteffect, as: 'contest_effect' },
         ],
-        order: Sequelize.fn('RANDOM'),
+        order: Sequelize.fn('Random'),
         limit: 1,
     };
     if (metronomeOnly) { searchParams.where.metronome = 1; }
@@ -25,14 +26,14 @@ module.exports = {
     description: 'Returns a random Move',
     options: [ {
         name: 'allow_all',
-        type: 'BOOLEAN',
+        type: ApplicationCommandOptionType.Boolean,
         description: 'Allow Moves that cannot be called by Metronome. No by default.',
         required: false,
     } ],
     async execute(interaction) {
         const move = await getRandomMove(!interaction.options.getBoolean('allow_all'));
         interaction.options._hoistedOptions.push(
-            { name: 'name', type: 'STRING', value: move.name },
+            { name: 'name', type: ApplicationCommandOptionType.String, value: move.name },
         );
         await executeMove(interaction);
     },

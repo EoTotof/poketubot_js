@@ -1,16 +1,17 @@
-const { MessageEmbed } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 const getWeaknessEmbed = (damage, weaknessLevel) => {
     weaknessLevel = weaknessLevel || 1;
     const weaknessMultiplier = (1.5 + 0.5 * Math.floor((weaknessLevel - 1) * 1.5));
 
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle('Weakness')
         .setDescription(
             `${damage} damage after weakness is applied (x ${weaknessMultiplier}): `
               + `**${Math.floor(damage * weaknessMultiplier)}**`,
         )
-        .setColor('RANDOM');
+        .setColor('Random');
 };
 
 module.exports = {
@@ -19,13 +20,13 @@ module.exports = {
     options: [
         {
             name: 'damage',
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             description: 'Damage before application of weakness',
             required: true,
         },
         {
             name: 'weakness_level',
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             description: 'Level of weakness. 1 by default (simple weakness), 3 maximum.',
             required: false,
         },
@@ -34,7 +35,7 @@ module.exports = {
         const weaknessLevel = interaction.options.getInteger('weakness_level');
         if (weaknessLevel && (weaknessLevel < 1 || weaknessLevel > 3)) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('Weakness level must be between 1 and 3.')],
+                embeds: [new EmbedBuilder().setDescription('Weakness level must be between 1 and 3.')],
             });
         }
         else {

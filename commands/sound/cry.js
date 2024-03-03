@@ -1,9 +1,10 @@
-const { MessageEmbed, MessageButton } = require('discord.js');
+const { EmbedBuilder, ButtonBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 
 const models = require('../../models');
 const { toTitleCase, normalizeString } = require('../../utils');
 const { addMegaButtons, executeCommandInteraction, playAudioFromUrl, getSuggestion } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getPokemonsWithCries = async (nameOrNumber) => {
     let pokemons;
@@ -42,17 +43,17 @@ const getCryEmbed = (pokemon, megaForm = undefined) => {
         description += ` - ${toTitleCase(megaForm, '_')}`;
     }
 
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setDescription(`Playing Cry of ${description}`)
-        .setColor('RANDOM');
+        .setColor('Random');
 };
 
 const getInteractionButtons = (pokemons, timestamp) => {
     const buttons = pokemons.map((pokemon, index) => {
-        return new MessageButton()
+        return new ButtonBuilder()
             .setCustomId(`${timestamp}-cry-${pokemons[0].number}-${index}`)
             .setLabel(pokemon.form || 'Normal')
-            .setStyle('PRIMARY');
+            .setStyle('Primary');
     });
 
     addMegaButtons(buttons, timestamp, pokemons, 'cry');
@@ -108,7 +109,7 @@ module.exports = {
     description: 'Plays the Cry of a Pokémon',
     options: [{
         name: 'name_or_number',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name (English, French, German or Japanese) or number of the Pokémon',
         required: true,
     }],
@@ -116,7 +117,7 @@ module.exports = {
         const channel = interaction.member?.voice.channel;
         if (!channel) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('Please join a voice channel to use this command.')],
+                embeds: [new EmbedBuilder().setDescription('Please join a voice channel to use this command.')],
                 ephemeral: true,
             });
             return;
@@ -134,7 +135,7 @@ module.exports = {
             let nothingFoundMessage = `Nothing found for "${interaction.options.getString('name_or_number')}"`;
             nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+                embeds: [new EmbedBuilder().setDescription(nothingFoundMessage)],
                 ephemeral: true,
             });
         }

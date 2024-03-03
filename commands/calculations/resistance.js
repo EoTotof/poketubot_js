@@ -1,16 +1,17 @@
-const { MessageEmbed } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 const getResistanceEmbed = (damage, resistanceLevel) => {
     resistanceLevel = resistanceLevel || 1;
     const resistanceDivisor = 2 ** resistanceLevel;
 
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle('Resistance')
         .setDescription(
             `${damage} damage after resistance is applied (÷ ${resistanceDivisor}): `
               + `**${Math.ceil(damage / resistanceDivisor)}**`,
         )
-        .setColor('RANDOM');
+        .setColor('Random');
 };
 
 module.exports = {
@@ -19,13 +20,13 @@ module.exports = {
     options: [
         {
             name: 'damage',
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             description: 'Damage before application of resistance',
             required: true,
         },
         {
             name: 'resistance_level',
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             description: 'Level of resistance. 1 by default (simple resistance), 3 maximum.',
             required: false,
         },
@@ -34,7 +35,7 @@ module.exports = {
         const resistanceLevel = interaction.options.getInteger('resistance_level');
         if (resistanceLevel && (resistanceLevel < 1 || resistanceLevel > 3)) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('Resistance level must be between 1 and 3.')],
+                embeds: [new EmbedBuilder().setDescription('Resistance level must be between 1 and 3.')],
             });
         }
         else {

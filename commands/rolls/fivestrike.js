@@ -1,11 +1,12 @@
-const { MessageEmbed } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 const getFivestrikeEmbed = (prerolled = undefined) => {
     const roll = prerolled ? prerolled : Math.floor(Math.random() * 8) + 1;
 
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle('Fivestrike')
-        .setColor('RANDOM')
+        .setColor('Random')
         .setFields([
             {
                 name: prerolled ? 'Prerolled value' : 'Roll',
@@ -25,7 +26,7 @@ module.exports = {
     description: 'Rolls the number of hits of a five-strike move',
     options: [{
         name: 'prerolled',
-        type: 'INTEGER',
+        type: ApplicationCommandOptionType.Integer,
         description: 'Result of the die (it will not be rolled). Between 1 and 8.',
         required: false,
     }],
@@ -38,7 +39,7 @@ module.exports = {
         }
         else {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('The die value must be between 1 and 8.')],
+                embeds: [new EmbedBuilder().setDescription('The die value must be between 1 and 8.')],
             });
         }
 

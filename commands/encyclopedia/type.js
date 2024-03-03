@@ -1,6 +1,7 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getType = async (name) => {
     return await models.type.findOne({
@@ -23,9 +24,9 @@ const getType = async (name) => {
 };
 
 const getTypeEmbed = (type) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(`${type.name} Type`)
-        .setColor('RANDOM');
+        .setColor('Random');
 
     const [superEffective, notVeryEffective, ineffective] = [2, 0.5, 0].map((value) => {
         return type.attacking_typeeffectivenesses
@@ -64,7 +65,7 @@ module.exports = {
     description: 'Displays the effectiveness of and against a given Type',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name of the Type',
         required: true,
     }],
@@ -72,7 +73,7 @@ module.exports = {
         const type = await getType(interaction.options.getString('name'));
         if (!type) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(`Nothing found for "${interaction.options.getString('name')}"`)],
+                embeds: [new EmbedBuilder().setDescription(`Nothing found for "${interaction.options.getString('name')}"`)],
             });
         }
         else {

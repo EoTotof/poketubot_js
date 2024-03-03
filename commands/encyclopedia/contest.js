@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleDefineCommand } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getContestEffect = async (name) => {
     return await models.contesteffect.findOne({
@@ -10,14 +11,14 @@ const getContestEffect = async (name) => {
 };
 
 const getContestEmbed = (contestEffect) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(contestEffect.name)
         .setFields([
             { name: 'Dice', value: contestEffect.dice_roll, inline: true },
             { name: 'Effect', value: contestEffect.effect, inline: true },
         ])
-        .setFooter('Contest Effect')
-        .setColor('RANDOM');
+        .setFooter({ text:'Contest Effect' })
+        .setColor('Random');
 };
 
 
@@ -26,7 +27,7 @@ module.exports = {
     description: 'Defines a Contest Effect',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name of the Contest Effect',
         required: true,
     }],

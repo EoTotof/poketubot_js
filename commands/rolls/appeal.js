@@ -1,10 +1,11 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { rollDice } = require('../../utils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getAppealEmbed = (diceNumber, isCenterOfAttention) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(`Appeal roll ${isCenterOfAttention ? 'as the Center of Attention' : ''} - ${diceNumber}d6`)
-        .setColor('RANDOM');
+        .setColor('Random');
 
     const rolls = rollDice(diceNumber, 6);
     const rollToAppeal = isCenterOfAttention ? ((x) => Math.floor(x / 2) - (x < 3)) : ((x) => 1 - (x === 1) + (x === 6));
@@ -24,13 +25,13 @@ module.exports = {
     options: [
         {
             name: 'dice_number',
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             description: 'Number of dice that are rolled.',
             required: true,
         },
         {
             name: 'center_of_attention',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             description: 'The Pokémon is the Center of Attention',
             required: false,
         },
@@ -40,12 +41,12 @@ module.exports = {
 
         if (diceNumber > 50) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('No more than 50 dice!')],
+                embeds: [new EmbedBuilder().setDescription('No more than 50 dice!')],
             });
         }
         else if (diceNumber === 0) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('One die minimum!')],
+                embeds: [new EmbedBuilder().setDescription('One die minimum!')],
             });
         }
         else {

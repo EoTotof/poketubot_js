@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Sequelize, Op } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleRandomCommand, executeSimpleDefineCommand } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getNatureByName = async (name) => {
     return await models.nature.findOne({
@@ -32,16 +33,16 @@ const getRandomNature = async () => {
             { model: models.stat, as: 'increase' },
             { model: models.stat, as: 'decrease' },
         ],
-        order: Sequelize.fn('RANDOM'),
+        order: Sequelize.fn('Random'),
         limit: 1,
     });
 };
 
 const getNatureEmbed = (nature) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(`${nature.name}`)
         .setDescription(`+${nature.increase.abbreviation}, -${nature.decrease.abbreviation}`)
-        .setColor('RANDOM');
+        .setColor('Random');
 
     if (nature.increase !== nature.decrease) {
         embed.addFields([
@@ -69,20 +70,20 @@ module.exports = {
         {
             name: 'random',
             description: 'Rolls a random Nature',
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
         },
         {
             name: 'define',
             description: 'Defines a Nature',
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             options: [
                 {
                     name: 'by_name',
                     description: 'Returns a Nature using its name',
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: 'name',
-                        type: 'STRING',
+                        type: ApplicationCommandOptionType.String,
                         description: 'Name of the Nature',
                         required: true,
                     }],
@@ -91,18 +92,18 @@ module.exports = {
                 {
                     name: 'by_stats',
                     description: 'Returns a Nature using its stats',
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: 'increased_stat',
-                            type: 'INTEGER',
+                            type: ApplicationCommandOptionType.Integer,
                             description: 'Stat increased by the Nature',
                             required: true,
                             choices: statChoices,
                         },
                         {
                             name: 'decreased_stat',
-                            type: 'INTEGER',
+                            type: ApplicationCommandOptionType.Integer,
                             description: 'Stat decreased the Nature',
                             required: true,
                             choices: statChoices,

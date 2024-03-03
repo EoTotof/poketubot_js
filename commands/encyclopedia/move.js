@@ -1,7 +1,8 @@
-const { MessageEmbed, MessageButton } = require('discord.js');
+const { EmbedBuilder, ButtonBuilder } = require('discord.js');
 const models = require('../../models');
 const { normalizeString } = require('../../utils');
 const { getSuggestion, executeCommandInteraction, getLastPlaytestVersion } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getMoves = async (name) => {
     const moves = await models.move.findAll({ include: [
@@ -18,11 +19,11 @@ const getMoves = async (name) => {
 };
 
 const getMoveEmbed = (move) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(move.name)
         .setDescription(`*${move.french_name}*`)
-        .setFooter('Move')
-        .setColor('RANDOM');
+        .setFooter({ text:'Move' })
+        .setColor('Random');
 
     const fields = [
         { name: 'Type', value: move.type.name, inline: true },
@@ -41,10 +42,10 @@ const getMoveEmbed = (move) => {
 const getInteractionButtons = (moves, timestamp) => {
     return moves.map((move, index) => {
         const buttonLabel = move.name.match(/\[(.+)\]/) ? move.name.match(/\[(.+)\]/)[1] : '1.05';
-        return new MessageButton()
+        return new ButtonBuilder()
             .setCustomId(`${timestamp}-move-${normalizeString(moves[0].name)}-${index}`)
             .setLabel(buttonLabel)
-            .setStyle('PRIMARY');
+            .setStyle('Primary');
     });
 };
 
@@ -70,13 +71,13 @@ module.exports = {
     options: [
         {
             name: 'name',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             description: 'Name of the Move (English or French)',
             required: true,
         },
         {
             name: 'choose_version',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             description: 'Manually select the version if a playtest exists. Latest version by default.',
             required: false,
         },
@@ -95,7 +96,7 @@ module.exports = {
             let nothingFoundMessage = `Nothing found for "${interaction.options.getString('name')}"`;
             nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+                embeds: [new EmbedBuilder().setDescription(nothingFoundMessage)],
                 ephemeral: true,
             });
         }

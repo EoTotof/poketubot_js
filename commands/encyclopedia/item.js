@@ -1,8 +1,9 @@
-const { MessageEmbed, MessageButton } = require('discord.js');
+const { EmbedBuilder, ButtonBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
 const { normalizeString } = require('../../utils');
 const { addLongField, getSuggestion, getLastPlaytestVersion, executeCommandInteraction } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getItems = async (name) => {
     return await models.item.findAll({
@@ -14,10 +15,10 @@ const getItems = async (name) => {
 };
 
 const getItemEmbed = (item) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(item.name)
-        .setFooter('Item')
-        .setColor('RANDOM');
+        .setFooter({ text:'Item' })
+        .setColor('Random');
 
     if (item.cost) { embed.setDescription(`${item.cost} ₽`);}
 
@@ -40,10 +41,10 @@ const getItemEmbed = (item) => {
 const getInteractionButtons = (items, timestamp) => {
     return items.map((item, index) => {
         const buttonLabel = item.name.match(/\[(.+)\]/) ? item.name.match(/\[(.+)\]/)[1] : '1.05';
-        return new MessageButton()
+        return new ButtonBuilder()
             .setCustomId(`${timestamp}-item-${normalizeString(items[0].name)}-${index}`)
             .setLabel(buttonLabel)
-            .setStyle('PRIMARY');
+            .setStyle('Primary');
     });
 };
 
@@ -69,13 +70,13 @@ module.exports = {
     options: [
         {
             name: 'name',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             description: 'Name of the Item',
             required: true,
         },
         {
             name: 'choose_version',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             description: 'Manually select the version if a playtest exists. Latest version by default.',
             required: false,
         },
@@ -94,7 +95,7 @@ module.exports = {
             let nothingFoundMessage = `Nothing found for "${interaction.options.getString('name')}"`;
             nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+                embeds: [new EmbedBuilder().setDescription(nothingFoundMessage)],
                 ephemeral: true,
             });
         }

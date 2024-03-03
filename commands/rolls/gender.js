@@ -1,11 +1,12 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { getPokemons } = require('../encyclopedia/pokedex').otherExports;
 const { rollDice } = require('../../utils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getGenderEmbed = (pokemon) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(`Gender roll for ${pokemon.name}`)
-        .setColor('RANDOM');
+        .setColor('Random');
 
     if (pokemon.male_ratio === null) {
         embed.setDescription(`${pokemon.name} has no gender.`);
@@ -28,7 +29,7 @@ module.exports = {
     description: 'Rolls for the gender of a given Pokémon',
     options: [{
         name: 'name_or_number',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name (English, French, German or Japanese) or number of the Pokémon',
         required: true,
     }],
@@ -37,7 +38,7 @@ module.exports = {
 
         if (pokemons.length === 0) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(`Nothing found for "${interaction.options.getString('name_or_number')}"`)],
+                embeds: [new EmbedBuilder().setDescription(`Nothing found for "${interaction.options.getString('name_or_number')}"`)],
             });
         }
 

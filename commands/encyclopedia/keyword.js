@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleDefineCommand } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getKeyword = async (name) => {
     return await models.keyword.findOne({
@@ -10,11 +11,11 @@ const getKeyword = async (name) => {
 };
 
 const getKeywordEmbed = (keyword) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(keyword.name)
         .setDescription(keyword.description)
-        .setFooter('Keyword')
-        .setColor('RANDOM');
+        .setFooter({ text:'Keyword' })
+        .setColor('Random');
 };
 
 
@@ -23,7 +24,7 @@ module.exports = {
     description: 'Defines a Move Keyword',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name of the Keyword',
         required: true,
     }],

@@ -1,6 +1,7 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getDamageBase = async (value) => {
     return await models.damagebase.findOne({
@@ -9,10 +10,10 @@ const getDamageBase = async (value) => {
 };
 
 const getDBEmbed = (damageBase, isCriticalHit) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(`${isCriticalHit ? 'Critical Hit! ' : ''}DB ${damageBase.value}`)
         .setDescription(isCriticalHit ? damageBase.critical_roll : damageBase.dice_roll)
-        .setColor('RANDOM');
+        .setColor('Random');
 };
 
 
@@ -22,13 +23,13 @@ module.exports = {
     options: [
         {
             name: 'value',
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             description: 'Value of the Damage Base (DB), from 1 to 28',
             required: true,
         },
         {
             name: 'critical_hit',
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             description: 'The hit is a Critical Hit!',
             required: false,
         },
@@ -37,7 +38,7 @@ module.exports = {
         const object = await getDamageBase(interaction.options.getInteger('value'));
         if (!object) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(`Nothing found for "${interaction.options.getInteger('value')}"`)],
+                embeds: [new EmbedBuilder().setDescription(`Nothing found for "${interaction.options.getInteger('value')}"`)],
             });
         }
         else {

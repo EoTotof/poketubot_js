@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Sequelize, Op } = require('sequelize');
 const models = require('../../models');
 const { rollDice } = require('../../utils');
+const { ApplicationCommandOptionType } = require('discord.js');
 const executeItem = require('../encyclopedia/item').execute;
 
 const getRandomItem = async (category) => {
@@ -10,15 +11,15 @@ const getRandomItem = async (category) => {
             pickup: category,
             name: { [Op.notLike] : '%[%]' },
         },
-        order: Sequelize.fn('RANDOM'),
+        order: Sequelize.fn('Random'),
         limit: 1,
     });
 };
 
 const getPickupEmbed = ({ roll = undefined, category, item = undefined }) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle('Pickup')
-        .setColor('RANDOM');
+        .setColor('Random');
 
     const fields = [];
     if (roll) {
@@ -39,7 +40,7 @@ module.exports = {
     description: 'Returns a random Item',
     options: [ {
         name: 'category',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Force the category of the found Item.',
         required: false,
         choices: [
@@ -88,8 +89,8 @@ module.exports = {
             });
 
             interaction.options._hoistedOptions.push(
-                { name: 'name', type: 'STRING', value: item.name },
-                { name: 'choose_version', type: 'BOOLEAN', value: true },
+                { name: 'name', type: ApplicationCommandOptionType.String, value: item.name },
+                { name: 'choose_version', type: ApplicationCommandOptionType.Boolean, value: true },
             );
             interaction.pickup = true;
             await executeItem(interaction);

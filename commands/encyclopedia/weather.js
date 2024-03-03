@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleDefineCommand } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getWeatherCondition = async (name) => {
     return await models.weathercondition.findOne({
@@ -10,11 +11,11 @@ const getWeatherCondition = async (name) => {
 };
 
 const getWeatherEmbed = (weatherCondition) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(weatherCondition.display_name)
         .setDescription(weatherCondition.description)
-        .setFooter('Weather Condition')
-        .setColor('RANDOM');
+        .setFooter({ text:'Weather Condition' })
+        .setColor('Random');
 };
 
 module.exports = {
@@ -22,7 +23,7 @@ module.exports = {
     description: 'Defines a Weather Condition',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name of the Weather Condition',
         required: true,
     }],

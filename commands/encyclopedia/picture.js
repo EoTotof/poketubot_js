@@ -1,9 +1,10 @@
-const { MessageEmbed, MessageButton } = require('discord.js');
+const { EmbedBuilder, ButtonBuilder } = require('discord.js');
 
 const { getPokemons } = require('./pokedex.js').otherExports;
 const { addMegaButtons, executeCommandInteraction, getSuggestion } = require('../commandsUtils');
 const { toTitleCase } = require('../../utils');
 const models = require('../../models');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 
 const getPictureEmbed = (pokemon, megaForm = undefined) => {
@@ -19,22 +20,22 @@ const getPictureEmbed = (pokemon, megaForm = undefined) => {
         .filter((x) => x)
         .join('_');
 
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setDescription(description)
         .setImage(
             process.env.PIC_URL
                 .replace('<pokemon>', `${pokemon.number.toString().padStart(3, '0')}`)
                 .replace('<form>', form ? `-${form}` : ''),
         )
-        .setColor('RANDOM');
+        .setColor('Random');
 };
 
 const getInteractionButtons = (pokemons, timestamp) => {
     const buttons = pokemons.map((pokemon, index) => {
-        return new MessageButton()
+        return new ButtonBuilder()
             .setCustomId(`${timestamp}-picture-${pokemons[0].number}-${index}`)
             .setLabel(pokemon.form || 'Normal')
-            .setStyle('PRIMARY');
+            .setStyle('Primary');
     });
 
     addMegaButtons(buttons, timestamp, pokemons, 'picture');
@@ -73,7 +74,7 @@ module.exports = {
     description: 'Displays the picture of a Pokémon',
     options: [{
         name: 'name_or_number',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name (English, French, German or Japanese) or number of the Pokémon',
         required: true,
     }],
@@ -91,7 +92,7 @@ module.exports = {
             let nothingFoundMessage = `Nothing found for "${interaction.options.getString('name_or_number')}"`;
             nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+                embeds: [new EmbedBuilder().setDescription(nothingFoundMessage)],
                 ephemeral: true,
             });
         }

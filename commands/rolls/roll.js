@@ -1,5 +1,6 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { rollDice } = require('../../utils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getRollEmbed = (diceString) => {
     const rollOne = (simpleDiceString) => {
@@ -38,7 +39,7 @@ const getRollEmbed = (diceString) => {
         .reduce((x, y) => x + y, 0);
 
     if (diceNumber > 1000) {
-        return new MessageEmbed()
+        return new EmbedBuilder()
             .setDescription('No more than 1000 dice!');
     }
     else {
@@ -70,9 +71,9 @@ const getRollEmbed = (diceString) => {
             response = `**${diceString} :** ${rollsTotal}`;
         }
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setDescription(response)
-            .setColor('RANDOM');
+            .setColor('Random');
         return embed;
     }
 };
@@ -83,12 +84,12 @@ module.exports = {
     options: [
         {
             name: 'dice_string',
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             description: 'The dice to roll',
             required: true,
         }, {
             name: 'user',
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
             description: 'The User who will receive the result of your roll (if not given, the roll is sent to the channel)',
             required: false,
         },
@@ -97,7 +98,7 @@ module.exports = {
         let diceString = interaction.options.getString('dice_string');
         if (!diceString.match(/^(?:(?:\s*[+-]\s*)?\d+(?:\s*[dD]\s*\d+)?)+$/g)) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('Not a valid expression')],
+                embeds: [new EmbedBuilder().setDescription('Not a valid expression')],
             });
         }
         else {

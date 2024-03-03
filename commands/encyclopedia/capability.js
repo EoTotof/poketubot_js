@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleDefineCommand } = require('../commandsUtils');
+const { EmbedBuilder } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getCapability = async (name) => {
     return await models.capability.findOne({
@@ -10,11 +11,11 @@ const getCapability = async (name) => {
 };
 
 const getCapabilityEmbed = (capability) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(capability.name)
         .setDescription(capability.description)
-        .setFooter('Capability')
-        .setColor('RANDOM');
+        .setFooter({ text:('Capability') })
+        .setColor('Random');
 };
 
 module.exports = {
@@ -22,7 +23,7 @@ module.exports = {
     description: 'Defines a Capability',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name of the Capability',
         required: true,
     }],

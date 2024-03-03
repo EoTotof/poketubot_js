@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleDefineCommand, addLongField } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getCombatManeuver = async (name) => {
     return await models.combatmaneuver.findOne({
@@ -10,10 +11,10 @@ const getCombatManeuver = async (name) => {
 };
 
 const getManeuverEmbed = (combatManeuver) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(combatManeuver.name)
-        .setFooter('Combat Maneuver')
-        .setColor('RANDOM');
+        .setFooter({ text:'Combat Maneuver' })
+        .setColor('Random');
 
     const fields = [];
     if (combatManeuver.accuracy) { fields.push({ name: 'AC', value: `${combatManeuver.accuracy}`, inline: true }); }
@@ -30,7 +31,7 @@ module.exports = {
     description: 'Defines a Combat Maneuver',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name of the Combat Maneuver',
         required: true,
     }],

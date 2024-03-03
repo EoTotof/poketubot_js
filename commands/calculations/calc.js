@@ -1,10 +1,11 @@
-const { MessageEmbed } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Parser } = require('expr-eval');
 
 const getCalcEmbed = (expression, result) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setDescription(`${expression} = ${result}`)
-        .setColor('RANDOM');
+        .setColor('Random');
 };
 
 module.exports = {
@@ -12,7 +13,7 @@ module.exports = {
     description: 'Evaluates a mathematical expression (using "JavaScript Expression Evaluator")',
     options: [{
         name: 'expression',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Expression to be evaluated',
         required: true,
     }],
@@ -24,7 +25,7 @@ module.exports = {
         }
         catch (error) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('Not a valid expression')],
+                embeds: [new EmbedBuilder().setDescription('Not a valid expression')],
             });
             return;
         }

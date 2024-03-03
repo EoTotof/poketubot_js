@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleDefineCommand } = require('../commandsUtils');
+const { EmbedBuilder } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getAffliction = async (name) => {
     return await models.affliction.findOne({
@@ -10,11 +11,11 @@ const getAffliction = async (name) => {
 };
 
 const getAfflictionEmbed = (affliction) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(affliction.display_name)
         .setDescription(affliction.description)
-        .setFooter(`${affliction.persistence} Affliction`)
-        .setColor('RANDOM');
+        .setFooter({ text:`${affliction.persistence} Affliction` })
+        .setColor('Random');
 };
 
 module.exports = {
@@ -22,7 +23,7 @@ module.exports = {
     description: 'Defines an Affliction',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name of the Affliction',
         required: true,
     }],

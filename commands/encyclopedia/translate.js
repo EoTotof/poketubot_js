@@ -1,16 +1,17 @@
-const { MessageEmbed } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { getPokemons } = require('./pokedex.js').otherExports;
 
 const getTranslateEmbed = (pokemon) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(`${pokemon.name}`)
         .setFields([
             { name: 'French', value: pokemon.french_name, inline: true },
             { name: 'German', value: pokemon.german_name, inline: true },
             { name: 'Japanese', value: pokemon.japanese_name, inline: true },
         ])
-        .setFooter(`Pokémon #${pokemon.number}`)
-        .setColor('RANDOM');
+        .setFooter({ text:`Pokémon #${pokemon.number}` })
+        .setColor('Random');
 };
 
 module.exports = {
@@ -18,7 +19,7 @@ module.exports = {
     description: 'Displays the name of a Pokémon in English, French, German and Japanese',
     options: [{
         name: 'name_or_number',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name (English, French, German or Japanese) or number of the Pokémon',
         required: true,
     }],
@@ -27,7 +28,7 @@ module.exports = {
 
         if (pokemons.length === 0) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(`Nothing found for "${interaction.options.getString('name_or_number')}"`)],
+                embeds: [new EmbedBuilder().setDescription(`Nothing found for "${interaction.options.getString('name_or_number')}"`)],
             });
         }
 

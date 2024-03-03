@@ -1,5 +1,6 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { rollDice } = require('../../utils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getDowsingEmbed = (diceNumber) => {
     const colors = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Violet'];
@@ -22,9 +23,9 @@ const getDowsingEmbed = (diceNumber) => {
         bounty[color] += 1;
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(`Dowsing roll - ${diceNumber}d6`)
-        .setColor('RANDOM');
+        .setColor('Random');
 
     const fields = [{ name: 'Roll', value: totalRolls.map((x) => x == 6 ? '**6**' : x).join(', ') }];
 
@@ -45,7 +46,7 @@ module.exports = {
     description: 'Roll to look for Shards using a Dowsing Rod',
     options: [{
         name: 'dice_number',
-        type: 'INTEGER',
+        type: ApplicationCommandOptionType.Integer,
         description: 'Number of dice that are rolled.',
         required: true,
     }],
@@ -54,12 +55,12 @@ module.exports = {
 
         if (diceNumber > 50) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('No more than 50 dice!')],
+                embeds: [new EmbedBuilder().setDescription('No more than 50 dice!')],
             });
         }
         else if (diceNumber === 0) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription('One die minimum!')],
+                embeds: [new EmbedBuilder().setDescription('One die minimum!')],
             });
         }
         else {

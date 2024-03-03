@@ -1,8 +1,9 @@
-const { MessageEmbed, MessageButton } = require('discord.js');
+const { EmbedBuilder, ButtonBuilder } = require('discord.js');
 
 const models = require('../../models');
 const { normalizeString } = require('../../utils');
 const { executeCommandInteraction, getSuggestion } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getPokemons = async (nameOrNumber) => {
     let pokemons;
@@ -22,22 +23,22 @@ const getPokemons = async (nameOrNumber) => {
 };
 
 const getPokedexEmbed = (pokemon, form = undefined) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setDescription(`${pokemon.name}${form ? ' - ' + pokemon.form + ' form' : '' }`)
         .setImage(
             process.env.DEX_URL
                 .replace('<pokemon>', `${pokemon.number}`)
                 .replace('<form>', form > 0 ? `-${form}` : ''),
         )
-        .setColor('RANDOM');
+        .setColor('Random');
 };
 
 const getInteractionButtons = (pokemons, timestamp) => {
     return pokemons.map((pokemon, index) => {
-        return new MessageButton()
+        return new ButtonBuilder()
             .setCustomId(`${timestamp}-pokedex-${pokemons[0].number}-${index}`)
             .setLabel(pokemon.form)
-            .setStyle('PRIMARY');
+            .setStyle('Primary');
     });
 };
 
@@ -62,7 +63,7 @@ module.exports = {
     description: 'Displays the Pokédex entry of a Pokémon',
     options: [{
         name: 'name_or_number',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name (English, French, German or Japanese) or number of the Pokémon',
         required: true,
     }],
@@ -80,7 +81,7 @@ module.exports = {
             let nothingFoundMessage = `Nothing found for "${interaction.options.getString('name_or_number')}"`;
             nothingFoundMessage += suggestion.length === 0 ? '' : `\nDid you mean ${suggestion.join(', ')}?`;
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(nothingFoundMessage)],
+                embeds: [new EmbedBuilder().setDescription(nothingFoundMessage)],
                 ephemeral: true,
             });
         }

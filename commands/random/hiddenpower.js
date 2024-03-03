@@ -1,19 +1,19 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Sequelize } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleRandomCommand } = require('../commandsUtils');
 
 const getRandomType = async () => {
     return await models.type.findOne({
-        order: Sequelize.fn('RANDOM'),
+        order: Sequelize.fn('Random'),
         limit: 1,
     });
 };
 
 const getHiddenpowerEmbed = (type) => {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(`${type.name} Type`)
-        .setColor('RANDOM');
+        .setColor('Random');
 };
 
 

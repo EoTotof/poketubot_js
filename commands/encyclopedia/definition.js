@@ -1,4 +1,5 @@
-const { MessageEmbed } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 // TODO rename all to getter to make requires more generic
 const { getAbilities } = require('./ability').otherExports;
@@ -36,7 +37,7 @@ module.exports = {
     description: 'Tries to find a definition in all available commands',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name to look for',
         required: true,
     }],
@@ -56,12 +57,12 @@ module.exports = {
         );
         if (positiveResults.length == 0) {
             await interaction.reply({
-                embeds: [new MessageEmbed().setDescription(`Nothing found for "${interaction.options.getString('name')}"`)],
+                embeds: [new EmbedBuilder().setDescription(`Nothing found for "${interaction.options.getString('name')}"`)],
             });
         }
         else {
             interaction.options._hoistedOptions.push(
-                { name: 'name_or_number', type: 'STRING', value: interaction.options.getString('name') },
+                { name: 'name_or_number', type: ApplicationCommandOptionType.String, value: interaction.options.getString('name') },
             );
 
             const executeCommand = allCommands.find(({ command }) => command === positiveResults[0]).execute;
@@ -71,7 +72,7 @@ module.exports = {
         if (positiveResults.length > 1) {
             const otherCommands = positiveResults.slice(1).map((x) => `/${x}`).join(', ');
             await interaction.followUp({
-                embeds: [new MessageEmbed().setDescription(`Other results were found for the following commands:\n${otherCommands}`)],
+                embeds: [new EmbedBuilder().setDescription(`Other results were found for the following commands:\n${otherCommands}`)],
             });
         }
     },

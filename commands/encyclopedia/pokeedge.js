@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleDefineCommand, addLongField } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getPokeEdge = async (name) => {
     return await models.pokeedge.findOne({
@@ -10,11 +11,11 @@ const getPokeEdge = async (name) => {
 };
 
 const getPokeedgeEmbed = (pokeEdge) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(pokeEdge.name)
         .setDescription(`${pokeEdge.tp_cost} TP`)
-        .setFooter('Pokémon Edge')
-        .setColor('RANDOM');
+        .setFooter({ text:'Pokémon Edge' })
+        .setColor('Random');
 
     const fields = [
         { name: 'Prerequisites', value: `${pokeEdge.prerequisites}` },
@@ -31,7 +32,7 @@ module.exports = {
     description: 'Defines a Pokémon Edge',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name of the Pokémon Edge',
         required: true,
     }],

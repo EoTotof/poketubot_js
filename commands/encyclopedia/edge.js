@@ -1,7 +1,8 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Op } = require('sequelize');
 const models = require('../../models');
 const { executeSimpleDefineCommand, addLongField } = require('../commandsUtils');
+const { ApplicationCommandOptionType } = require('discord.js');
 
 const getEdge = async (name) => {
     return await models.edge.findOne({
@@ -10,10 +11,10 @@ const getEdge = async (name) => {
 };
 
 const getEdgeEmbed = (edge) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle(edge.name)
-        .setFooter('Edge')
-        .setColor('RANDOM');
+        .setFooter({ text:'Edge' })
+        .setColor('Random');
 
     const fields = [];
     if (edge.prerequisites) { fields.push({ name: 'Prerequisites', value: `${edge.prerequisites}` }); }
@@ -29,7 +30,7 @@ module.exports = {
     description: 'Defines a Edge',
     options: [{
         name: 'name',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         description: 'Name of the Edge',
         required: true,
     }],
